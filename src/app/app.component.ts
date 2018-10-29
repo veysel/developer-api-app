@@ -16,6 +16,10 @@ export class AppComponent {
   constructor(
     private appService: AppService
   ) {
+    this.UpdateAllList();
+  }
+
+  public UpdateAllList(): void {
     this.appService.GetList().subscribe(result => {
       if (result) {
         this.ApiList = result.list;
@@ -37,6 +41,27 @@ export class AppComponent {
     ];
 
     return "rgb(" + list.join(",") + ")";
+  }
+
+  public SearchChange(value: string): void {
+    if (value.length < 1) {
+      this.UpdateAllList();
+    }
+    else {
+      this.ApiList = new Array<ApiModel>();
+
+      this.appService.GetList().subscribe(result => {
+        if (result) {
+          this.ApiList = result.list;
+
+          this.ApiList = this.ApiList.filter(x => x.name.toLowerCase().includes(value.toLowerCase()));
+
+          this.ApiList.forEach(item => {
+            item.colorText = this.GetRandomColor();
+          });
+        }
+      });
+    }
   }
 
 }
